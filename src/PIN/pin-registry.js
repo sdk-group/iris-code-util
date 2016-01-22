@@ -77,12 +77,13 @@ class PINRegistry {
 			.then((res) => {
 				let registry = res.value.code || [];
 				let to_put = res.value;
-				_.remove(registry, code);
+				_.remove(registry, (val) => {
+					return _.isEqual(val, code)
+				});
 				to_put.code = registry;
 				let opts = {
 					cas: res.cas
 				};
-				console.log("TOPUT", to_put, code);
 				return db.upsert(key, to_put, opts);
 			})
 			.then((res) => {
