@@ -39,18 +39,8 @@ describe("Prefix", function() {
 	let code;
 
 	describe("prefix make", () => {
-		it("load prefixes", (done) => {
-			prefix.loadPrefixes()
-				.then((res) => {
-					console.log("RES", res);
-					done();
-				})
-				.catch((err) => {
-					done(err);
-				});
-		});
 		it("no key in bucket", (done) => {
-			prefix.make("iris://data#service-1", "2016-01-12")
+			prefix.make("A", "2016-01-12")
 				.then((res) => {
 					code = res;
 					console.log("CODE", res);
@@ -66,7 +56,7 @@ describe("Prefix", function() {
 				});
 		});
 		it("prefix make on key", (done) => {
-			prefix.make("iris://data#service-1")
+			prefix.make("B", "2016-01-12")
 				.then((res) => {
 					code = res;
 					console.log("CODE", res);
@@ -82,7 +72,7 @@ describe("Prefix", function() {
 				});
 		});
 		it("should return err with 0 tries", (done) => {
-			prefix.make("iris://data#service-1", false, 0)
+			prefix.make("G", "2016-01-12", 0)
 				.then((res) => {
 					code = res;
 					console.log("CODE", res);
