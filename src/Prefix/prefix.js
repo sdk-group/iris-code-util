@@ -1,7 +1,6 @@
 'use strict'
 
 let couchbird = require("Couchbird")();
-let N1qlQuery = require("Couchbird").N1qlQuery;
 
 let db;
 let prefix_cache = {};
@@ -33,17 +32,18 @@ class PrefixMaker {
 		let day = date ? date : (new Date()).toLocaleDateString();
 		let id = _.join([key, day], "-");
 		let code;
+		let dummy = {
+			value: {}
+		};
+		dummy.value[prefix] = [];
 		return db.get(id)
 			.catch((err) => {
 				if(!_.includes(err.message, 'The key does not exist on the server'))
 					return Promise.reject(err);
-				let dummy = {};
-				dummy[prefix] = [];
-				return Promise.resolve({
-					value: dummy
-				});
+				return Promise.resolve(dummy);
 			})
-			.then((res) => {
+			.then((data) => {
+				let res = data || dummy;
 				let registry = res.value[prefix] || [];
 				let num = _.parseInt((_.last(registry) || 0)) + 1;
 				code = _.join([prefix, num], "-");

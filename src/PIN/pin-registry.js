@@ -33,17 +33,19 @@ class PINRegistry {
 		if(!try_num)
 			return Promise.reject(new Error("Failed to create PIN."));
 		let code;
+		let dummy = {
+			value: {
+				code: []
+			}
+		};
 		return db.get(key)
 			.catch((err) => {
 				if(!_.includes(err.message, 'The key does not exist on the server'))
 					return Promise.reject(err);
-				return Promise.resolve({
-					value: {
-						code: []
-					}
-				});
+				return Promise.resolve(dummy);
 			})
-			.then((res) => {
+			.then((data) => {
+				let res = data || dummy;
 				let registry = res.value.code || [];
 				let done = false;
 				while(!done) {
