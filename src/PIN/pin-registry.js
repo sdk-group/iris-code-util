@@ -49,7 +49,7 @@ class PINRegistry {
 				let registry = res.value.code || [];
 				let done = false;
 				while(!done) {
-					code = _.join([office, gpc(pin_length).toString()], "-");
+					code = office + gpc(pin_length).toString();
 					done = (!!_.indexOf(registry, code));
 				}
 				let to_put = res.value;
