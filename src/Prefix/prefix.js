@@ -46,7 +46,7 @@ class PrefixMaker {
 				let res = data || dummy;
 				let registry = res.value[prefix] || [];
 				let num = _.parseInt((_.last(registry) || 0)) + 1;
-				code = _.join([prefix, num], "-");
+				code = prefix ? _.join([prefix, num], "-") : _.toString(num);
 				let to_put = res.value;
 				registry.push(num);
 				to_put[prefix] = registry;
