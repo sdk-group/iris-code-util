@@ -35,6 +35,7 @@
   "devDependencies": {
     "Couchbird": "git+https://github.com/YuuKohaku/Couchbird.git",
     "babel-plugin-remove-comments": "^2.0.0",
+    "babel-plugin-remove-console": "^1.0.1",
     "babel-plugin-transform-remove-console": "^6.5.0",
     "babel-plugin-transform-strict-mode": "^6.6.5",
     "babel-plugin-undeclared-variables-check": "^6.7.2",
