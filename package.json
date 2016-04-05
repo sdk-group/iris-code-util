@@ -30,10 +30,11 @@
   "dependencies": {
     "bluebird": "^3.3.4",
     "generate-pincode": "^3.0.1",
-    "lodash": "^4.6.1"
+    "lodash": "^4.8.2"
   },
   "devDependencies": {
     "Couchbird": "git+https://github.com/YuuKohaku/Couchbird.git",
+    "babel-plugin-remove-comments": "^2.0.0",
     "babel-plugin-transform-remove-console": "^6.5.0",
     "babel-plugin-transform-strict-mode": "^6.6.5",
     "babel-plugin-undeclared-variables-check": "^6.7.2",
