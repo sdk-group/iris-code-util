@@ -5,11 +5,6 @@ let couchbird = require("Couchbird")();
 let db;
 let prefix_cache = {};
 let key;
-let num_tries;
-
-let prop_mapping = {
-	prefix: "iris://vocabulary/domain#prefix"
-};
 
 class PrefixMaker {
 	constructor() {
@@ -18,54 +13,36 @@ class PrefixMaker {
 
 	static configure({
 		bucket,
-		storage_key,
-		tries
+		storage_key
 	}) {
 		db = couchbird.bucket(bucket);
-		key = storage_key || "label_registry";
-		num_tries = tries || 5;
+		key = storage_key || "label-registry";
 	}
 
-	static recursive_make(prefix, date, try_num = 1) {
-		if(!try_num)
-			return Promise.reject(new Error("Failed to create label code."));
-		let day = date ? date : (new Date()).toLocaleDateString();
-		let id = _.join([key, day], "-");
-		let code;
-		let dummy = {
-			value: {}
-		};
-		dummy.value[prefix] = [];
-		return db.get(id)
-			.catch((err) => {
-				if(!_.includes(err.message, 'The key does not exist on the server'))
-					return Promise.reject(err);
-				return Promise.resolve(dummy);
-			})
-			.then((data) => {
-				let res = data || dummy;
-				let registry = res.value[prefix] || [];
-				let num = _.parseInt((_.last(registry) || 0)) + 1;
-				code = prefix ? _.join([prefix, num], "-") : _.toString(num);
-				let to_put = res.value;
-				registry.push(num);
-				to_put[prefix] = registry;
-				let opts = res.cas ? {
-					cas: res.cas
-				} : {};
-				return db.upsert(id, to_put, opts);
-			})
-			.then((res) => {
-				return Promise.resolve(code);
-			})
-			.catch((err) => {
-				return PrefixMaker.recursive_make(prefix, day, try_num - 1);
+	static make(prefix, office, date) {
+		let day = date ? date : (new Date())
+			.toLocaleDateString();
+		let mark = _(prefix)
+			.map((t) => t.charCodeAt(0))
+			.join('-');
+		let id = _.join([key, office, mark, day], "-");
+
+		return new Promise((resolve, reject) => {
+			db.counter(id, 1, {
+				initial: 1
+			}, (err, res) => {
+				if (err) {
+					reject(new Error(new Error("Failed to create label code:" + err.message)));
+				} else {
+					// console.log("KKK", id, res, mark, prefix);
+					let label = prefix ? [prefix, res.value].join("-") : res.value;
+					resolve(label);
+				}
 			});
+		});
+
 	}
 
-	static make(prefix, date, try_num = num_tries) {
-		return PrefixMaker.recursive_make(prefix, date, try_num);
-	}
 
 }
 

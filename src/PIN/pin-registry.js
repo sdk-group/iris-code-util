@@ -1,7 +1,8 @@
 'use strict'
 
 let couchbird = require("Couchbird")();
-let N1qlQuery = require("Couchbird").N1qlQuery;
+let N1qlQuery = require("Couchbird")
+	.N1qlQuery;
 let gpc = require('generate-pincode');
 
 let db = null;
@@ -12,7 +13,7 @@ let timeo;
 
 class PINRegistry {
 	constructor() {
-		throw new Error("Don't piss me off.");
+		throw new Error("Singletone.");
 	}
 
 	static configure({
@@ -24,13 +25,13 @@ class PINRegistry {
 	}) {
 		db = couchbird.bucket(bucket);
 		pin_length = length || 7;
-		key = storage_key || "pin_registry";
+		key = storage_key || "pin-registry";
 		pin_tries = tries || 5;
 		timeo = timeout || 500;
 	}
 
 	static recursive_make(office = 'default', try_num = 1) {
-		if(!try_num)
+		if (!try_num)
 			return Promise.reject(new Error("Failed to create PIN."));
 		let code;
 		let dummy = {
@@ -40,7 +41,7 @@ class PINRegistry {
 		};
 		return db.get(key)
 			.catch((err) => {
-				if(!_.includes(err.message, 'The key does not exist on the server'))
+				if (!_.includes(err.message, 'The key does not exist on the server'))
 					return Promise.reject(err);
 				return Promise.resolve(dummy);
 			})
@@ -48,8 +49,9 @@ class PINRegistry {
 				let res = data || dummy;
 				let registry = res.value.code || [];
 				let done = false;
-				while(!done) {
-					code = office + gpc(pin_length).toString();
+				while (!done) {
+					code = office + gpc(pin_length)
+						.toString();
 					done = (!!_.indexOf(registry, code));
 				}
 				let to_put = res.value;
@@ -73,7 +75,7 @@ class PINRegistry {
 	}
 
 	static recursive_remove(code, try_num = 1) {
-		if(!try_num)
+		if (!try_num)
 			return Promise.reject(new Error("Failed to remove PIN."));
 		return db.get(key)
 			.then((res) => {
@@ -92,7 +94,7 @@ class PINRegistry {
 				return Promise.resolve(true);
 			})
 			.catch((err) => {
-				if(!_.includes(err.message, 'The key does not exist on the server'))
+				if (!_.includes(err.message, 'The key does not exist on the server'))
 					return Promise.resolve(true);
 				return PINRegistry.recursive_remove(code, try_num - 1);
 			});
